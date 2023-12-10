@@ -4,8 +4,8 @@ We use the ring signature proof to enhance privacy when withdrawals cryptos from
 which is so far unique in the market. We are fast, simple and secure.
 
 # Chainlink usage
-Our protocol uses Chainlink’s techniques in 3 places:  
-1. **deposit on Supervisor.sol**: Chainlink.functions  
+Our protocol uses Chainlink’s techniques(Chainlink.functions and Chainlink.CCIP) in 3 places:  
+1. **deposit on Supervisor.sol**: Chainlink.functions makes the whole monitoring process more decentralized and fair.  
 [FunctionsConsumer.sol](./contracts/supervisor/FunctionsConsumer.sol)  
 [Piece of code that fulfillRequest on Supervisor.sol(line 89)](./contracts/supervisor/Supervisor.sol)
 ```
@@ -13,18 +13,14 @@ Our protocol uses Chainlink’s techniques in 3 places:
         require(response.length > 126, "response length is not correct"); 
         require(msg.sender == functionConsumer, "only functionConsumer");
 
-       
         bytes memory _decodeBytesAddress = decodeToBytesFromEncodeString(slice(response, 0, 126));
 
         address _address1 = toAddress(_decodeBytesAddress, 0);
         address _address2 = toAddress(_decodeBytesAddress, 20);
         
-
         if(blacklist[_address1]==true && blacklist[_address2]==false) blacklist[_address2] = true;
         if(blacklist[_address2]==true && blacklist[_address1]==false) blacklist[_address1] = true;
 
-        // send reward
-        // to be done later...
     }
 
 ```
