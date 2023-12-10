@@ -4,9 +4,9 @@ We use the ring signature proof to enhance privacy when withdrawals cryptos from
 which is so far unique in the market. We are fast, simple and secure.
 
 # Chainlink usage
-Our protocol uses Chainlink’s techniques in 3 places:
-1. **deposit on Supervisor.sol**: Chainlink.functions
-[FunctionsConsumer.sol](./contracts/supervisor/FunctionsConsumer.sol)
+Our protocol uses Chainlink’s techniques in 3 places:  
+1. **deposit on Supervisor.sol**: Chainlink.functions  
+[FunctionsConsumer.sol](./contracts/supervisor/FunctionsConsumer.sol)  
 [Piece of code that fulfillRequest on Supervisor.sol(line 89)](./contracts/supervisor/Supervisor.sol)
 ```
     function fulfillRequest(bytes memory response) public{
@@ -29,9 +29,9 @@ Our protocol uses Chainlink’s techniques in 3 places:
 
 ```
 
-2. **transfer on main network Pool.sol**: Chainlink.CCIP synchronizes the information to L2
-[TransferSender.sol](./contracts/core/01Ethereum/TransferSender.sol)
-[TransferReceiver.sol](./contracts/core/02Polygon/TransferReceiver.sol)
+2. **transfer on main network Pool.sol**: Chainlink.CCIP synchronizes the information to L2  
+[TransferSender.sol](./contracts/core/01Ethereum/TransferSender.sol)  
+[TransferReceiver.sol](./contracts/core/02Polygon/TransferReceiver.sol)  
 [Piece of code that set data on L2 Pool.sol(line 188)](./contracts/core/02Polygon/Pool.sol)
 ```
     function setDataFromTransferReceiver(bytes memory data) external {
@@ -46,9 +46,9 @@ Our protocol uses Chainlink’s techniques in 3 places:
 ```
 
 
-3. **withdraw on L2 Pool.sol**: Chainlink.CCIP synchronizes the information to main network and withdrawal operation is automatically executed on main network.
-[WithdrawSender.sol](./contracts/core/02Polygon/WithdrawSender.sol)
-[WithdrawReceiver.sol](./contracts/core/01Ethereum/WithdrawReceiver.sol)
+3. **withdraw on L2 Pool.sol**: Chainlink.CCIP synchronizes the information to main network and withdrawal operation is automatically executed on main network.  
+[WithdrawSender.sol](./contracts/core/02Polygon/WithdrawSender.sol)  
+[WithdrawReceiver.sol](./contracts/core/01Ethereum/WithdrawReceiver.sol)  
 [Piece of code that withdraw on main network Pool.sol(line 267)](./contracts/core/01Ethereum/Pool.sol)
 
 ```
