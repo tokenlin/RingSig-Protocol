@@ -2,7 +2,7 @@
 pragma solidity 0.8.19;
 
 contract Supervisor{
-    // using  SafeMath for uint256;
+  
     uint256 public constant timelock = 5;  // Asset disclosure time, (s)
     address public owner;
 
@@ -11,7 +11,6 @@ contract Supervisor{
     mapping(address => bool) public whitelist; // 
     Order[] public orders;
     struct Order{
-        // uint256 index;
         uint256 amount;
         uint256 timestamp;
         address depositor;
@@ -51,7 +50,6 @@ contract Supervisor{
         require(orders[index].depositor == sender,"Not Depositor");
         require(_amount<=orders[index].amount,"Insufficient balance");
         orders[index].amount = orders[index].amount - _amount;
-        // orders[index].amount = orders[index].amount.sub(_amount);
         sender.transfer(_amount);
     }
 
@@ -64,7 +62,6 @@ contract Supervisor{
         require(orders[index].timestamp+timelock<block.timestamp,"During the publicity period");
         require(_amount<=orders[index].amount,"Insufficient balance");
         orders[index].amount = orders[index].amount - _amount;
-        // orders[index].amount = orders[index].amount.sub(_amount);
         sender.transfer(_amount);
     }
     
@@ -90,19 +87,15 @@ contract Supervisor{
     }
 
     function fulfillRequest(bytes memory response) public{
-        require(response.length > 126, "response length is not correct");  // 3 addresses, 1 index => 3*(42) + at least 1 > 126
+        require(response.length > 126, "response length is not correct"); 
         require(msg.sender == functionConsumer, "only functionConsumer");
 
-        // get related address
+       
         bytes memory _decodeBytesAddress = decodeToBytesFromEncodeString(slice(response, 0, 126));
 
         address _address1 = toAddress(_decodeBytesAddress, 0);
         address _address2 = toAddress(_decodeBytesAddress, 20);
-        // address _address3 = BytesLib.toAddress(_decodeBytesAddress, 40);
-
-        // get order index
-        // bytes memory _indexEncodeString = BytesLib.slice(response, 126, response.length-126);  // data, start, length 
-        // uint256 _index = DecodeToBytes.getUintFromEncodeString(_indexEncodeString);
+        
 
         if(blacklist[_address1]==true && blacklist[_address2]==false) blacklist[_address2] = true;
         if(blacklist[_address2]==true && blacklist[_address1]==false) blacklist[_address1] = true;
@@ -139,30 +132,16 @@ contract Supervisor{
         assembly {
             switch iszero(_length)
                 case 0 {
-                    // Get a location of some free memory and store it in tempBytes as
-                    // Solidity does for memory variables.
+                   
                     tempBytes := mload(0x40)
 
-                    // The first word of the slice result is potentially a partial
-                    // word read from the original array. To read it, we calculate
-                    // the length of that partial word and start copying that many
-                    // bytes into the array. The first word we copy will start with
-                    // data we don't care about, but the last `lengthmod` bytes will
-                    // land at the beginning of the contents of the new array. When
-                    // we're done copying, we overwrite the full first word with
-                    // the actual length of the slice.
                     let lengthmod := and(_length, 31)
 
-                    // The multiplication in the next line is necessary
-                    // because when slicing multiples of 32 bytes (lengthmod == 0)
-                    // the following copy loop was copying the origin's length
-                    // and then ending prematurely not copying everything it should.
                     let mc := add(add(tempBytes, lengthmod), mul(0x20, iszero(lengthmod)))
                     let end := add(mc, _length)
 
                     for {
-                        // The multiplication in the next line has the same exact purpose
-                        // as the one above.
+                       
                         let cc := add(add(add(_bytes, lengthmod), mul(0x20, iszero(lengthmod))), _start)
                     } lt(mc, end) {
                         mc := add(mc, 0x20)
@@ -173,15 +152,13 @@ contract Supervisor{
 
                     mstore(tempBytes, _length)
 
-                    //update free-memory pointer
-                    //allocating the array padded to 32 bytes like the compiler does now
+                    
                     mstore(0x40, and(add(mc, 31), not(31)))
                 }
-                //if we want a zero-length slice let's just return a zero-length array
+                
                 default {
                     tempBytes := mload(0x40)
-                    //zero out the 32 bytes slice we are about to return
-                    //we need to do it because Solidity does not garbage collect
+                    
                     mstore(tempBytes, 0)
 
                     mstore(0x40, add(tempBytes, 0x20))
@@ -211,7 +188,7 @@ contract Supervisor{
         ){
         uint256 length = _b.length;
 
-        uint256 numberPrefix;  // prefix "0x" or "0X" number
+        uint256 numberPrefix;  
         for(uint256 i=0; i<length; i=i+2){    
             if(uint8(_b[i]) == 48 && (uint8(_b[i+1]) == 88 || uint8(_b[i+1]) == 120))  numberPrefix = numberPrefix + 1;  // prefix "0x" or "0X"
             
@@ -220,7 +197,7 @@ contract Supervisor{
         bytes memory _temp = new bytes(length/2-numberPrefix);
         uint256 j;
         for(uint256 i=0; i<length; i=i+2){    
-            if(uint8(_b[i]) == 48 && (uint8(_b[i+1]) == 88 || uint8(_b[i+1]) == 120))  continue;  // prefix "0x" or "0X"
+            if(uint8(_b[i]) == 48 && (uint8(_b[i+1]) == 88 || uint8(_b[i+1]) == 120))  continue;
             _temp[j++] = _toBytes1(_b[i], _b[i+1]);
         }
         return _temp;
@@ -237,21 +214,21 @@ contract Supervisor{
 
         _num = num0;
         require(_num>=48 && _num<=57 || _num>=65 && _num<=70 || _num>=97 && _num<=102, "bytes error1");
-        if(_num>=48 && _num<=57){ // 0~9
+        if(_num>=48 && _num<=57){ 
             numReturn = (_num-48) * 2**4;
-        }else if(_num>=65 && _num<=70){ // A~F
+        }else if(_num>=65 && _num<=70){ 
             numReturn = (_num-55) * 2**4;
-        }else{ // a~f
+        }else{ 
             numReturn = (_num-87) * 2**4;
         }
 
         _num = num1;
         require(_num>=48 && _num<=57 || _num>=65 && _num<=70 || _num>=97 && _num<=102, "bytes error2");
-        if(_num>=48 && _num<=57){ // 0~9
+        if(_num>=48 && _num<=57){ 
             numReturn = numReturn + (_num-48);
-        }else if(_num>=65 && _num<=70){ // A~F
+        }else if(_num>=65 && _num<=70){ 
             numReturn = numReturn + (_num-55);
-        }else{ // a~f
+        }else{ 
             numReturn = numReturn + (_num-87);
         }
 

@@ -4,7 +4,6 @@ pragma solidity 0.8.19;
 import "./TransferSender.sol";  
 import "./WithdrawReceiver.sol"; 
 
-
 import "./Supervisor.sol";
 import "./Pool.sol";
 import "./interfaces/IFactory.sol";

@@ -6,46 +6,24 @@ import "./BytesLib.sol";
 
 library DecodeToBytes{
 
-    // ";" => 0x3b (ascii 59)
-    // "0" => 0x30 (ascii 48)
-    // "9" => 0x39 (ascii 57)
-
-    // "A" => (ascii 65)
-    // "F" => (ascii 70)
-    // "X" => (ascii 88)
-
-    // "a" => (ascii 97)
-    // "f" => (ascii 102)
-    // "x" => (ascii 120)
-
-    // encode from string "0xadb...09", decode to bytes 0xadb...09 
     function decodeToBytesFromEncodeString(bytes memory _b) public pure returns(
         bytes memory
-        // uint256, bytes1, bytes1, uint8, uint8
         ){
         uint256 length = _b.length;
-        // uint256 index;
-        // 0x3078 3066433530 3235433736 3463453334 6466333532 3735376538 3266374235 6334446633 3941383336
-        // return (length, _b[0], _b[1], uint8(_b[0]), uint8(_b[1]));  // 42, 0x30, 0x78, 48, 120
-
-        // if(uint8(_b[0]) == 48 && (uint8(_b[1]) == 88 || uint8(_b[1]) == 120)) { // prefix "0x" or "0X"
-        //     index = 2;
-        // }
-        //0xddaAd340b0 f1Ef65169A e5E41A8b10 776a75482d
-
-        uint256 numberPrefix;  // prefix "0x" or "0X" number
+       
+        uint256 numberPrefix; 
         for(uint256 i=0; i<length; i=i+2){    
-            if(uint8(_b[i]) == 48 && (uint8(_b[i+1]) == 88 || uint8(_b[i+1]) == 120))  numberPrefix = numberPrefix + 1;  // prefix "0x" or "0X"
+            if(uint8(_b[i]) == 48 && (uint8(_b[i+1]) == 88 || uint8(_b[i+1]) == 120))  numberPrefix = numberPrefix + 1;  
             
         }
 
         bytes memory _temp = new bytes(length/2-numberPrefix);
         uint256 j;
         for(uint256 i=0; i<length; i=i+2){    
-            if(uint8(_b[i]) == 48 && (uint8(_b[i+1]) == 88 || uint8(_b[i+1]) == 120))  continue;  // prefix "0x" or "0X"
+            if(uint8(_b[i]) == 48 && (uint8(_b[i+1]) == 88 || uint8(_b[i+1]) == 120))  continue;  
             _temp[j++] = _toBytes1(_b[i], _b[i+1]);
         }
-        // _address = address(bytes20(_temp));
+       
         return _temp;
         
     }
@@ -53,9 +31,6 @@ library DecodeToBytes{
 
     function splitStringToAddressArray(string memory _s, string memory _split) public pure returns(
         address[] memory _addressList
-        // bytes memory
-        // uint256, uint256, uint256
-        // uint256, uint256, bytes1, bytes1
         ){
         
         bytes memory _b = bytes(_s);
@@ -63,8 +38,6 @@ library DecodeToBytes{
 
 
         uint256 length = _b.length;
-
-        // return (length, _bsplit.length);
         
         uint256 numberSplit; 
         uint256 numberPrefix;
@@ -72,8 +45,6 @@ library DecodeToBytes{
             if(_b[i] == _bsplit) numberSplit = numberSplit + 1;
             if(uint8(_b[i]) == 48 && (uint8(_b[i+1]) == 88 || uint8(_b[i+1]) == 120))  numberPrefix = numberPrefix + 1;  // prefix "0x" or "0X"     
         }
-
-        // return (length, numberSplit, numberPrefix);
 
         bytes memory _new = new bytes(length-numberSplit);
         numberSplit = 0;
@@ -89,11 +60,10 @@ library DecodeToBytes{
         bytes memory _temp = new bytes(length/2-numberPrefix);
         uint256 j;
         for(uint256 i=0; i<length; i=i+2){    
-            if(uint8(_new[i]) == 48 && (uint8(_new[i+1]) == 88 || uint8(_new[i+1]) == 120))  continue;  // prefix "0x" or "0X"
+            if(uint8(_new[i]) == 48 && (uint8(_new[i+1]) == 88 || uint8(_new[i+1]) == 120))  continue; 
             _temp[j++] = _toBytes1(_new[i], _new[i+1]);
         }
-        // _address = address(bytes20(_temp));
-        // return _temp;
+       
         _addressList = new address[](_temp.length/20);
 
         for(uint256 i=0; i<_addressList.length; i++){
@@ -114,21 +84,21 @@ library DecodeToBytes{
 
         _num = num0;
         require(_num>=48 && _num<=57 || _num>=65 && _num<=70 || _num>=97 && _num<=102, "bytes error1");
-        if(_num>=48 && _num<=57){ // 0~9
+        if(_num>=48 && _num<=57){ 
             numReturn = (_num-48) * 2**4;
-        }else if(_num>=65 && _num<=70){ // A~F
+        }else if(_num>=65 && _num<=70){ 
             numReturn = (_num-55) * 2**4;
-        }else{ // a~f
+        }else{ 
             numReturn = (_num-87) * 2**4;
         }
 
         _num = num1;
         require(_num>=48 && _num<=57 || _num>=65 && _num<=70 || _num>=97 && _num<=102, "bytes error2");
-        if(_num>=48 && _num<=57){ // 0~9
+        if(_num>=48 && _num<=57){ 
             numReturn = numReturn + (_num-48);
-        }else if(_num>=65 && _num<=70){ // A~F
+        }else if(_num>=65 && _num<=70){ 
             numReturn = numReturn + (_num-55);
-        }else{ // a~f
+        }else{ 
             numReturn = numReturn + (_num-87);
         }
 
@@ -137,9 +107,6 @@ library DecodeToBytes{
     }
 
 
-    // string "12345" => encode to bytes => 12345
-    // "0" => 0x30 (ascii 48)
-    // "9" => 0x39 (ascii 57)
     function getUintFromEncodeString(bytes memory _b) public pure returns(uint256 returnUint){
         uint256 length = _b.length;
         for(uint256 i=0; i<length; i++){
@@ -151,7 +118,6 @@ library DecodeToBytes{
     }
 
 
-    // bytes "0x1234" => 1234
     function getUintFromBytesType(bytes memory _b) public pure returns(uint256 returnUint){
         uint256 length = _b.length;
         for(uint256 i=0; i<length; i++){
@@ -166,10 +132,5 @@ library DecodeToBytes{
 
         }
     }
-
-    // function encodeString(string memory _s) public pure returns(bytes memory){
-    //     return bytes(_s);
-    // }
-
 
 }
